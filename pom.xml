@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>2.2.4.RELEASE</version>
+		<relativePath/> <!-- lookup parent from repository -->
+	</parent>
+	<groupId>com.microservices</groupId>
+	<artifactId>sc-stream-mansek</artifactId>
+	<version>1.0</version>
+	<packaging>war</packaging>
+	<name>stream-mansek</name>
+	<description>Services stream data to mandiri securitas</description>
+	
+	<repositories>
+		<repository>
+			<id>confluent</id>
+			<url>https://packages.confluent.io/maven/</url>
+		</repository>
+	</repositories>
+
+	<properties>
+		<java.version>1.8</java.version>
+        <jfairy.version>0.5.9</jfairy.version>
+	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.kafka</groupId>
+			<artifactId>spring-kafka</artifactId>
+		</dependency>
+
+ 		<dependency>
+ 			<groupId>org.springframework.boot</groupId>
+ 			<artifactId>spring-boot-starter-tomcat</artifactId>
+ 			<scope>provided</scope>
+ 		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>org.junit.vintage</groupId>
+					<artifactId>junit-vintage-engine</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.kafka</groupId>
+			<artifactId>spring-kafka-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+		</dependency>
+        <dependency>
+            <groupId>io.codearte.jfairy</groupId>
+            <artifactId>jfairy</artifactId>
+            <version>${jfairy.version}</version>
+        </dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+
+	<build>
+	<finalName>stream-mansek</finalName>
+		<plugins>
+		   <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-war-plugin</artifactId>
+        <configuration>
+          <overlays>
+            <overlay>
+<!--               <groupId>com.microservices</groupId> -->
+<!--               <artifactId>stream-mansek</artifactId> -->
+              <excludes>
+                <exclude>WEB-INF/lib/*websocket*.jar</exclude>
+              </excludes>
+            </overlay>
+          </overlays>
+        </configuration>
+      </plugin>
+        <plugin>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-maven-plugin</artifactId>
+            <executions>
+                <execution>
+                    <goals>
+                        <goal>repackage</goal>
+                    </goals>
+                </execution>
+            </executions>
+        </plugin>
+	</plugins>
+	</build>
+	<profiles>
+		<profile>
+			<id>dev</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-antrun-plugin</artifactId>
+						<version>${java.version}</version>
+						<executions>
+							<execution>
+								<phase>compile</phase>
+								<goals>
+									<goal>run</goal>
+								</goals>
+								<configuration>
+									<tasks>
+										<delete
+											file="${project.build.outputDirectory}/application.properties" />
+										<copy file="src/main/resources/dev.properties"
+											tofile="${project.build.outputDirectory}/application.properties" />
+									</tasks>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+		
+		<profile>
+			<id>test</id>
+			<build>
+				<plugins>
+				<plugin>
+	<groupId>org.apache.maven.plugins</groupId>
+	<artifactId>maven-war-plugin</artifactId>
+	<configuration>
+		<packagingExcludes>WEB-INF/lib/websocket*.jar</packagingExcludes>
+	</configuration>
+</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-antrun-plugin</artifactId>
+						<version>${java.version}</version>
+						<executions>
+							<execution>
+								<phase>compile</phase>
+								<goals>
+									<goal>run</goal>
+								</goals>
+								<configuration>
+									<tasks>
+										<delete
+											file="${project.build.outputDirectory}/application.properties" />
+										<copy file="src/main/resources/test.properties"
+											tofile="${project.build.outputDirectory}/application.properties" />
+									</tasks>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+
+		<profile>
+			<id>uat</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-antrun-plugin</artifactId>
+						<version>${java.version}</version>
+						<executions>
+							<execution>
+								<phase>compile</phase>
+								<goals>
+									<goal>run</goal>
+								</goals>
+								<configuration>
+									<tasks>
+										<delete
+											file="${project.build.outputDirectory}/application.properties" />
+										<copy file="src/main/resources/uat.properties"
+											tofile="${project.build.outputDirectory}/application.properties" />
+									</tasks>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+
+		<profile>
+			<id>production</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-antrun-plugin</artifactId>
+						<version>${java.version}</version>
+						<executions>
+							<execution>
+								<phase>compile</phase>
+								<goals>
+									<goal>run</goal>
+								</goals>
+								<configuration>
+									<tasks>
+										<delete
+											file="${project.build.outputDirectory}/application.properties" />
+										<copy file="src/main/resources/production.properties"
+											tofile="${project.build.outputDirectory}/application.properties" />
+									</tasks>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
+</project>
