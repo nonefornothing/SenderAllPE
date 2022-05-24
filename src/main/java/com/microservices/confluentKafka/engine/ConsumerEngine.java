@@ -1,6 +1,10 @@
 package com.microservices.confluentKafka.engine;
 
+import java.io.IOException;
 import java.io.Serializable;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.text.SimpleDateFormat;
 import java.util.concurrent.TimeUnit;
 
@@ -20,6 +24,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.microservices.confluentKafka.services.StreamService;
 import com.microservices.confluentKafka.utils.AESUtils;
+
+import org.apache.kafka.common.errors.*;
+
 
 @Service
 public class ConsumerEngine implements Serializable {
@@ -63,6 +70,9 @@ public class ConsumerEngine implements Serializable {
 	
 	@Value("${retry.count}")
 	private int retryCount;
+
+	@Value("${dir.failed.mansek}")
+	private String dirFailedMansek;
 	
 	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 
@@ -155,13 +165,10 @@ public class ConsumerEngine implements Serializable {
 			kafkaTemplate.send(topicName,sentData);
 			kafkaTemplate.send(topicName,partition,keyData,sentData);
 			logger.info("Produce Failed Data : " + sentData + " + to topic : " +  topicName);
-		}catch (InterruptedException e3){
-			logger.info("a");
-			cuma untuk commit progress :D
-		}catch (InvalidTopicException e){
-
-		}
-		catch (Exception e){
+		}catch (InvalidTopicException | OffsetMetadataTooLarge | RecordBatchTooLargeException | RecordTooLargeException | UnknownServerException e3){
+			logger.error("write to file...!!!"+" | Data  : " + sentData);
+			writeToFile(sentData);
+		}catch (Exception e){
 			logger.error("Error while sending data to kafka broker with " + e.getMessage());
 		}
 	}
@@ -223,6 +230,21 @@ public class ConsumerEngine implements Serializable {
 			logger.error("Error get partition number from message....!!! " +  e.getMessage());
 		}
 		return partition;
+	}
+
+	private void writeToFile(String bodyReal) {
+		try {
+			if(!bodyReal.isEmpty()) {
+				SimpleDateFormat sdf1 = new SimpleDateFormat("yyyyMMdd");
+				Files.write(Paths.get(dirFailedMansek+sdf1.format(new java.util.Date())+ "-failed-mansek.txt"), (bodyReal+ System.lineSeparator()).getBytes(), StandardOpenOption.CREATE, StandardOpenOption.APPEND);
+			}
+			else{
+				logger.error("Error...!!! write to failed PE file ...!!! Data null" );
+			}
+		}catch (IOException e3) {
+			logger.error("Error...!!! write to failed PE file ...!!!" + e3.getMessage());
+		}
+
 	}
 	
 }
