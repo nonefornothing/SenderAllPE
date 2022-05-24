@@ -157,6 +157,7 @@ public class ConsumerEngine implements Serializable {
 			logger.info("Produce Failed Data : " + sentData + " + to topic : " +  topicName);
 		}catch (InterruptedException e3){
 			logger.info("a");
+			cuma untuk commit progress :D
 		}catch (InvalidTopicException e){
 
 		}
