@@ -27,9 +27,6 @@ public class KafkaListenerFactory {
 	@Value("${kafka.consumer.auto.offset.reset}")
 	private String autoOffsetReset;
 	
-	@Value("${kafka.schema.registry.url}")
-	private String schemaRegistryUrl;
-	
 	@Value("${enable.auto.commit}")
 	private String enableAutoCommit;
 	
@@ -38,8 +35,6 @@ public class KafkaListenerFactory {
 	
 	
 	/**
-	 * @author bwx
-	 * @date 12-03-2020
 	 * 
 	 * This controller configuration consumer for listen String message and auto commit
 	 *
@@ -64,9 +59,7 @@ public class KafkaListenerFactory {
 	}
 	
 	/**
-	 * @author bwx
-	 * @date 12-03-2020
-	 * 
+	 *
 	 * This controller configuration consumer for listen String message and manual commit
 	 *
 	 */

@@ -1,11 +1,9 @@
 package com.microservices.confluentKafka.adapter.atic.api;
 
-import java.net.ConnectException;
+import org.springframework.http.ResponseEntity;
 
 public interface ClientAdapter {
 
-	String paramRequest(String body, String uri) throws ConnectException;
-	
-	String healtCheck();
+	ResponseEntity<String> paramRequest(String body, String uri) throws Exception;
 
 }
