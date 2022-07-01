@@ -21,7 +21,6 @@ Technology used for this repo :
 ![Main-sender-scenario](Main-sender-scenario.png)
 
 ![Data-center-design](Data-center-design.png)
-This application design to support Active-Passive Data center
 
 ## How to use
 
