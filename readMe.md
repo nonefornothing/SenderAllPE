@@ -15,8 +15,13 @@ Technology used for this repo :
 - If data failed to sent , then data will send to kafka to retry Topic. Data in retry Topic will be sent again if PE ask for it. To send data , use stream-failed-pe application to do that. This application not cover that purpose.
 - In almost all PE side, data can be saved to database , if and only if value date in data same as date of sending data. If mandiri give invalid data [data by date 2000] and PE just response it same as valid data then mandiri cannot track data that sent to PE. In that case, If data success to sent but receive response as invalid data [response code 4XX] , then data will write to file as invalid-data.
 - Any activity to application done, it will record in log files
+- Monitoring data in C3 using MonitoringProducerInterceptor & MonitoringConsumerInterceptor
+- Support Consumer Offset Translation to support FailOver scenario using ConsumerTimestampsInterceptor
 
 ![Main-sender-scenario](Main-sender-scenario.png)
+
+![Data-center-design](Data-center-design.png)
+This application design to support Active-Passive Data center
 
 ## How to use
 
@@ -84,3 +89,7 @@ If you implement flush , you are effectively implementing a sync producer
 ##Testing block with no message loss
 * https://jack-vanlightly.com/blog/2018/9/14/how-to-lose-messages-on-a-kafka-cluster-part1
 * https://jack-vanlightly.com/blog/2018/9/18/how-to-lose-messages-on-a-kafka-cluster-part-2
+
+## Consumer
+* https://serkansakinmaz.medium.com/error-handling-in-kafka-consumer-27357a641c19
+* https://strimzi.io/blog/2021/01/07/consumer-tuning/

@@ -68,6 +68,8 @@ public class KafkaProducerFactory {
         config.put(ProducerConfig.BUFFER_MEMORY_CONFIG,bufferMemory);
         config.put(ProducerConfig.DELIVERY_TIMEOUT_MS_CONFIG,deliveryTimeout);
         config.put(ProducerConfig.RETRY_BACKOFF_MS_CONFIG,retryBackoff);
+        // MonitoringProducerInterceptor: enables streams monitoring in Confluent Control Center
+        config.put(ProducerConfig.INTERCEPTOR_CLASSES_CONFIG,"io.confluent.monitoring.clients.interceptor.MonitoringProducerInterceptor");
         return config;
     }
 

@@ -9,11 +9,11 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.microservices</groupId>
-	<artifactId>sc-stream-mansek</artifactId>
+	<artifactId>sc-stream-pe</artifactId>
 	<version>1.0</version>
 	<packaging>war</packaging>
-	<name>stream-mansek</name>
-	<description>Services stream data to mandiri securitas</description>
+	<name>stream-pe</name>
+	<description>Services stream data to securitas</description>
 	
 	<repositories>
 		<repository>
@@ -46,12 +46,6 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
-			<exclusions>
-				<exclusion>
-					<groupId>org.junit.vintage</groupId>
-					<artifactId>junit-vintage-engine</artifactId>
-				</exclusion>
-			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.kafka</groupId>
@@ -67,15 +61,23 @@
             <artifactId>jfairy</artifactId>
             <version>${jfairy.version}</version>
         </dependency>
+
+<!--		kafka confluent extention-->
 		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-test</artifactId>
-			<scope>test</scope>
+			<groupId>io.confluent</groupId>
+			<artifactId>monitoring-interceptors</artifactId>
+			<version>5.5.1</version>
+		</dependency>
+
+		<dependency>
+			<groupId>io.confluent</groupId>
+			<artifactId>timestamp-interceptor</artifactId>
+			<version>7.1.2</version>
 		</dependency>
 	</dependencies>
 
 	<build>
-	<finalName>stream-mansek</finalName>
+	<finalName>stream-pe</finalName>
 		<plugins>
 		   <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -84,7 +86,7 @@
           <overlays>
             <overlay>
 <!--               <groupId>com.microservices</groupId> -->
-<!--               <artifactId>stream-mansek</artifactId> -->
+<!--               <artifactId>stream-pe</artifactId> -->
               <excludes>
                 <exclude>WEB-INF/lib/*websocket*.jar</exclude>
               </excludes>
@@ -121,12 +123,12 @@
 									<goal>run</goal>
 								</goals>
 								<configuration>
-									<tasks>
+									<target>
 										<delete
 											file="${project.build.outputDirectory}/application.properties" />
 										<copy file="src/main/resources/dev.properties"
 											tofile="${project.build.outputDirectory}/application.properties" />
-									</tasks>
+									</target>
 								</configuration>
 							</execution>
 						</executions>
@@ -140,12 +142,12 @@
 			<build>
 				<plugins>
 				<plugin>
-	<groupId>org.apache.maven.plugins</groupId>
-	<artifactId>maven-war-plugin</artifactId>
-	<configuration>
-		<packagingExcludes>WEB-INF/lib/websocket*.jar</packagingExcludes>
-	</configuration>
-</plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-war-plugin</artifactId>
+					<configuration>
+						<packagingExcludes>WEB-INF/lib/websocket*.jar</packagingExcludes>
+					</configuration>
+				</plugin>
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-antrun-plugin</artifactId>
@@ -157,12 +159,12 @@
 									<goal>run</goal>
 								</goals>
 								<configuration>
-									<tasks>
+									<target>
 										<delete
 											file="${project.build.outputDirectory}/application.properties" />
 										<copy file="src/main/resources/test.properties"
 											tofile="${project.build.outputDirectory}/application.properties" />
-									</tasks>
+									</target>
 								</configuration>
 							</execution>
 						</executions>
@@ -186,12 +188,12 @@
 									<goal>run</goal>
 								</goals>
 								<configuration>
-									<tasks>
+									<target>
 										<delete
 											file="${project.build.outputDirectory}/application.properties" />
 										<copy file="src/main/resources/uat.properties"
 											tofile="${project.build.outputDirectory}/application.properties" />
-									</tasks>
+									</target>
 								</configuration>
 							</execution>
 						</executions>
@@ -215,12 +217,12 @@
 									<goal>run</goal>
 								</goals>
 								<configuration>
-									<tasks>
+									<target>
 										<delete
 											file="${project.build.outputDirectory}/application.properties" />
 										<copy file="src/main/resources/production.properties"
 											tofile="${project.build.outputDirectory}/application.properties" />
-									</tasks>
+									</target>
 								</configuration>
 							</execution>
 						</executions>
