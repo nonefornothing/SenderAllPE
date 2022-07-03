@@ -13,8 +13,8 @@ Technology used for this repo :
 - Consume data from broker kafka
 - Send consumed data from kafka to specific destination using rest API . 
 - If data failed to sent , then data will send to kafka to retry Topic. Data in retry Topic will be sent again if PE ask for it. To send data , use stream-failed-pe application to do that. This application not cover that purpose.
-- In almost all PE side, data can be saved to database , if and only if value date in data same as date of sending data. If mandiri give invalid data [data by date 2000] and PE just response it same as valid data then mandiri cannot track data that sent to PE. In that case, If data success to sent but receive response as invalid data [response code 4XX] , then data will write to file as invalid-data.
-- Any activity to application done, it will record in log files
+- In almost all PE side, data can be saved to database , if and only if value date in data same as date of sending data. If mandiri give outdated data [data by date 2000] and PE just response it same as valid data then mandiri cannot track data that sent to PE. In that case, If data success to sent but PE must respond as invalid data [response code 4XX] , then data will write to file as invalid-data.
+- Any activity to application, it will record in log files
 - Monitoring data in C3 using MonitoringProducerInterceptor & MonitoringConsumerInterceptor
 - Support Consumer Offset Translation to support FailOver scenario using ConsumerTimestampsInterceptor
 

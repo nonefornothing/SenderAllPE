@@ -1,5 +1,7 @@
 package com.microservices.confluentKafka.factory;
 
+import io.confluent.monitoring.clients.interceptor.MonitoringInterceptorConfig;
+import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.beans.factory.annotation.Value;
@@ -69,7 +71,12 @@ public class KafkaProducerFactory {
         config.put(ProducerConfig.DELIVERY_TIMEOUT_MS_CONFIG,deliveryTimeout);
         config.put(ProducerConfig.RETRY_BACKOFF_MS_CONFIG,retryBackoff);
         // MonitoringProducerInterceptor: enables streams monitoring in Confluent Control Center
-        config.put(ProducerConfig.INTERCEPTOR_CLASSES_CONFIG,"io.confluent.monitoring.clients.interceptor.MonitoringProducerInterceptor");
+        // Enable the embedded producer in the Consumer Timestamps Interceptor,
+        // which writes to the `__consumer_timestamps` topic in the origin cluster,
+        // to send Monitoring Producer Interceptors monitoring data
+        config.put("timestamps.producer." + ProducerConfig.INTERCEPTOR_CLASSES_CONFIG, "io.confluent.monitoring.clients.interceptor.MonitoringProducerInterceptor");
+        config.put(MonitoringInterceptorConfig.MONITORING_INTERCEPTOR_PREFIX + ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
+        config.put("timestamps.producer." + MonitoringInterceptorConfig.MONITORING_INTERCEPTOR_PREFIX + ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
         return config;
     }
 

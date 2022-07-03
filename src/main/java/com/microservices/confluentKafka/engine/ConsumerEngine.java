@@ -54,25 +54,40 @@ public class ConsumerEngine implements Serializable {
 
 	@KafkaListener(id="${consumer.client.id}",topics = "${kafka.consumer.clean.topic}",autoStartup="${auto.startup.mode}" , containerFactory="kafkaListenerContainerFactoryString")
 	public void consume(ConsumerRecord<String, String> consumerRecord, Acknowledgment acknowledgment) throws Exception {
-		String bodyReal = getBody(consumerRecord,jsonKeyUrl,jsonKeyTopicName);
-		ResponseEntity<String> result;
 		try {
-			String encryptedMessage = encryptMessage(bodyReal);
-			String uriDestination =getUri(consumerRecord);
-			logger.info("start send data : "+ sdf.format(new java.util.Date()) +" | Offset  : " + consumerRecord.offset() + " | partition : " + consumerRecord.partition()+" | data : "+ bodyReal);
-			result = sending(encryptedMessage,uriDestination);
-			acknowledgment.acknowledge();
-			logger.info("end send data : "+ sdf.format(new java.util.Date()) +" | Offset  : " + consumerRecord.offset() + " | partition : " + consumerRecord.partition() + " | response : " + result);
-			if(result.getStatusCode().is4xxClientError()){
-				writeToFile(bodyReal);
+			String encryptedMessage = null;
+			String uriDestination = null;
+			String bodyReal = null;
+			try {
+				bodyReal = getBody(consumerRecord,jsonKeyUrl,jsonKeyTopicName);
+				encryptedMessage = encryptMessage(bodyReal);
+				uriDestination =getUri(consumerRecord);
+			}catch (Exception e){
+				writeToFile(consumerRecord.value());
+				logger.error("Error....!!!  " + e.getMessage());
+				logger.error("write data with offset " + consumerRecord.offset() + " , partition " + consumerRecord.partition() + " to file");
+			}
+			if (bodyReal != null) {
+				logger.info("start send data : " + sdf.format(new java.util.Date()) + " | Offset  : " + consumerRecord.offset() + " | partition : " + consumerRecord.partition() + " | data : " + bodyReal);
+				ResponseEntity<String> result = sending(encryptedMessage, uriDestination);
+				acknowledgment.acknowledge();
+				logger.info("end send data : " + sdf.format(new java.util.Date()) + " | Offset  : " + consumerRecord.offset() + " | partition : " + consumerRecord.partition() + " | response : " + result.getBody());
+				if (result.getStatusCode().is4xxClientError()) {
+					writeToFile(bodyReal);
+					logger.error("Error....!!! error message " + result.getBody() + " status code : " + result.getStatusCodeValue());
+					logger.error("write data | " + bodyReal + " with offset " + consumerRecord.offset() + " , partition " + consumerRecord.partition() + " to file");
+				}
 			}
 		}catch (Exception e) {
 			String bodyRetryReal = getBody(consumerRecord,jsonKeyTopicName);
 			String topicName = getTopicName(consumerRecord);
 			String accountNumber = getAccountNumber(consumerRecord);
 			kafkaTemplate.send(topicName,accountNumber,bodyRetryReal);
+			acknowledgment.acknowledge();
 			logger.error("Error....!!!" + e.getMessage());
 			logger.error("Sent data to topic " + topicName + " with account number " + accountNumber);
+		}finally {
+			acknowledgment.acknowledge();
 		}
 	}
 
