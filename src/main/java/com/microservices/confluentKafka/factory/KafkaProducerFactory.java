@@ -75,7 +75,6 @@ public class KafkaProducerFactory {
         // which writes to the `__consumer_timestamps` topic in the origin cluster,
         // to send Monitoring Producer Interceptors monitoring data
         config.put("timestamps.producer." + ProducerConfig.INTERCEPTOR_CLASSES_CONFIG, "io.confluent.monitoring.clients.interceptor.MonitoringProducerInterceptor");
-        config.put(MonitoringInterceptorConfig.MONITORING_INTERCEPTOR_PREFIX + ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
         config.put("timestamps.producer." + MonitoringInterceptorConfig.MONITORING_INTERCEPTOR_PREFIX + ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
         return config;
     }
