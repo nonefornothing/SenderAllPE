@@ -77,7 +77,6 @@ public class ConsumerEngine implements Serializable {
 		}catch (HttpClientErrorException ec){
 			if (bodyReal != null) {
 				writeToFile(bodyReal);
-				logger.error("write data");
 				logger.error("Error....!!! error message " + ec.getMessage() + " status code : " + ec.getStatusCode());
 				logger.error("write data | " + bodyReal + " with offset " + consumerRecord.offset() + " , partition " + consumerRecord.partition() + " to file");
 			}else{
