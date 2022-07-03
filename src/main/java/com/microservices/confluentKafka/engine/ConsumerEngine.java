@@ -23,6 +23,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.microservices.confluentKafka.services.StreamService;
 import com.microservices.confluentKafka.utils.AESUtils;
+import org.springframework.web.client.HttpClientErrorException;
 
 
 @Service
@@ -54,10 +55,10 @@ public class ConsumerEngine implements Serializable {
 
 	@KafkaListener(id="${consumer.client.id}",topics = "${kafka.consumer.clean.topic}",autoStartup="${auto.startup.mode}" , containerFactory="kafkaListenerContainerFactoryString")
 	public void consume(ConsumerRecord<String, String> consumerRecord, Acknowledgment acknowledgment) throws Exception {
+		String encryptedMessage = null;
+		String uriDestination = null;
+		String bodyReal = null;
 		try {
-			String encryptedMessage = null;
-			String uriDestination = null;
-			String bodyReal = null;
 			try {
 				bodyReal = getBody(consumerRecord,jsonKeyUrl,jsonKeyTopicName);
 				encryptedMessage = encryptMessage(bodyReal);
@@ -72,12 +73,17 @@ public class ConsumerEngine implements Serializable {
 				ResponseEntity<String> result = sending(encryptedMessage, uriDestination);
 				acknowledgment.acknowledge();
 				logger.info("end send data : " + sdf.format(new java.util.Date()) + " | Offset  : " + consumerRecord.offset() + " | partition : " + consumerRecord.partition() + " | response : " + result.getBody());
-				if (result.getStatusCode().is4xxClientError()) {
-					writeToFile(bodyReal);
-					logger.error("Error....!!! error message " + result.getBody() + " status code : " + result.getStatusCodeValue());
-					logger.error("write data | " + bodyReal + " with offset " + consumerRecord.offset() + " , partition " + consumerRecord.partition() + " to file");
-				}
 			}
+		}catch (HttpClientErrorException ec){
+			if (bodyReal != null) {
+				writeToFile(bodyReal);
+				logger.error("write data");
+				logger.error("Error....!!! error message " + ec.getMessage() + " status code : " + ec.getStatusCode());
+				logger.error("write data | " + bodyReal + " with offset " + consumerRecord.offset() + " , partition " + consumerRecord.partition() + " to file");
+			}else{
+				logger.error("Body null");
+			}
+			acknowledgment.acknowledge();
 		}catch (Exception e) {
 			String bodyRetryReal = getBody(consumerRecord,jsonKeyTopicName);
 			String topicName = getTopicName(consumerRecord);
