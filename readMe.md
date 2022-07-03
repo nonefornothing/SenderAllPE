@@ -44,8 +44,26 @@ Technology used for this repo :
    ```
 - in project directory, go to target folder and move war file to your web application service
 
+# Security
+This repository provided 2 security feature : Basic AUTH & Data Encryption in application layer.
+This password use Lower letters , Upper letters, Number & Special Character with different length.
+  * Basic AUTH (user : 10 letter , password : 10 letter) 
+  * Data Encryption (15 letter)
+
+## Estimated brute force approach for Data Encryption
+  * https://password.kaspersky.com/ ==> 3261 centuries , bruteforce with an average home computer
+  * http://password-checker.online-domain-tools.com/ ==> 2 billion years , Medium size botnet
+  * http://lastbit.com/pswcalc.asp ==> 348.563.773.059  years , 500000 passwords per second using 100.000 computers
+
+## Estimated brute force approach for Basic Auth
+  * https://password.kaspersky.com/ ==> 10000+ centuries , bruteforce with an average home computer
+  * http://password-checker.online-domain-tools.com/ ==> About 1 sextillion year , Medium size botnet
+  * http://lastbit.com/pswcalc.asp ==> 2.842.093 trillion years , 500.000.000 passwords per second using 1.000.000 computers
+
 # Note
 Need cron job for cleaning data automatically for data log
+
+
 
 # License
 
