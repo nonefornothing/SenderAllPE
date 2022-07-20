@@ -1,0 +1,15 @@
+{
+	"Extref / ID": "2204279941677444118500001               ",
+	"account no": "1220009752364",
+	"currency": "IDR",
+	"value date": "20220427",
+	"NOTE": "                                        ",
+	"seqnum / sequence number": "1",
+	"mutasi code (D/C)": "C",
+	"trx type": "N597",
+	"trx amount": "400000.00",
+	"trx description": "                                                                                                                        ",
+	"reference remark": "22042799416774441185090843089           ",
+	"DESTINATIONURL": "http://10.243.215.92:8080/simulator-bucky/DATARECEIVER",
+	"PE_NAME": "BUCKY"
+}
