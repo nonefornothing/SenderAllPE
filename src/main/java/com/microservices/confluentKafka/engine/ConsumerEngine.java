@@ -75,12 +75,21 @@ public class ConsumerEngine implements Serializable {
 				logger.info("end send data : " + sdf.format(new java.util.Date()) + " | Offset  : " + consumerRecord.offset() + " | partition : " + consumerRecord.partition() + " | response : " + result.getBody());
 			}
 		}catch (HttpClientErrorException ec){
-			if (bodyReal != null) {
-				writeToFile(bodyReal);
-				logger.error("Error....!!! error message " + ec.getMessage() + " status code : " + ec.getStatusCode());
-				logger.error("write data | " + bodyReal + " with offset " + consumerRecord.offset() + " , partition " + consumerRecord.partition() + " to file");
-			}else{
-				logger.error("Body null");
+			if(ec.getStatusCode().value() == 400 || ec.getStatusCode().value() == 406){
+				if (bodyReal != null) {
+					writeToFile(bodyReal);
+					logger.error("Error....!!! error message " + ec.getMessage() + " status code : " + ec.getStatusCode());
+					logger.error("write data | " + bodyReal + " with offset " + consumerRecord.offset() + " , partition " + consumerRecord.partition() + " to file");
+				}else{
+					logger.error("Body null");
+				}
+			}else {
+				String bodyRetryReal = getBody(consumerRecord,jsonKeyTopicName);
+				String topicName = "FAILEDDATA" + getTopicName(consumerRecord);
+				String accountNumber = getAccountNumber(consumerRecord);
+				kafkaTemplate.send(topicName,accountNumber,bodyRetryReal);
+				logger.error("Error....!!!" + ec.getMessage());
+				logger.error("Sent data to topic " + topicName + " with account number " + accountNumber);
 			}
 			acknowledgment.acknowledge();
 		}catch (Exception e) {
@@ -184,7 +193,7 @@ public class ConsumerEngine implements Serializable {
 		try {
 			if(!bodyReal.isEmpty()) {
 				SimpleDateFormat sdf1 = new SimpleDateFormat("yyyyMMdd");
-				Files.write(Paths.get(dirFailedPE+sdf1.format(new java.util.Date())+ "-failed-pe.txt"), (bodyReal+ System.lineSeparator()).getBytes(), StandardOpenOption.CREATE, StandardOpenOption.APPEND);
+				Files.write(Paths.get(dirFailedPE+sdf1.format(new java.util.Date())+ "-DLQ-PE.txt"), (bodyReal+ System.lineSeparator()).getBytes(), StandardOpenOption.CREATE, StandardOpenOption.APPEND);
 			}
 			else{
 				logger.error("Error...!!! write to failed PE file ...!!! Data null" );
