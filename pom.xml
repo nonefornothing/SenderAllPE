@@ -95,7 +95,7 @@
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-log4j12</artifactId>
-			<version>1.7.32</version>
+			<version>1.7.34</version>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
@@ -154,10 +154,8 @@
 								</goals>
 								<configuration>
 									<target>
-										<delete
-											file="${project.build.outputDirectory}/application.properties" />
-										<copy file="src/main/resources/dev.properties"
-											tofile="${project.build.outputDirectory}/application.properties" />
+										<delete file="${project.build.outputDirectory}/application.properties"/>
+										<copy file="src/main/resources/dev.properties" tofile="${project.build.outputDirectory}/application.properties"/>
 									</target>
 								</configuration>
 							</execution>
@@ -191,10 +189,8 @@
 								</goals>
 								<configuration>
 									<target>
-										<delete
-											file="${project.build.outputDirectory}/application.properties" />
-										<copy file="src/main/resources/test.properties"
-											tofile="${project.build.outputDirectory}/application.properties" />
+										<delete file="${project.build.outputDirectory}/application.properties"/>
+										<copy file="src/main/resources/test.properties" tofile="${project.build.outputDirectory}/application.properties"/>
 									</target>
 								</configuration>
 							</execution>
@@ -228,10 +224,8 @@
 								</goals>
 								<configuration>
 									<target>
-										<delete
-											file="${project.build.outputDirectory}/application.properties" />
-										<copy file="src/main/resources/production.properties"
-											tofile="${project.build.outputDirectory}/application.properties" />
+										<delete file="${project.build.outputDirectory}/application.properties"/>
+										<copy file="src/main/resources/production.properties" tofile="${project.build.outputDirectory}/application.properties"/>
 									</target>
 								</configuration>
 							</execution>
